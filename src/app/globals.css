@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-bg: #000000;
+  --secondary-bg: #111111;
+  --accent-bg: #222222;
+  --card-bg: #1a1a1a;
+  --border-color: #333333;
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --accent-blue: #ffffff;
+  --accent-purple: #ffffff;
+  --accent-green: #ffffff;
+  --accent-red: #ffffff;
+  --accent-yellow: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  background: var(--primary-bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--secondary-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-blue);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-purple);
+}
+
+/* Canvas styling */
+canvas {
+  border: 1px solid var(--border-color);
+  background: var(--primary-bg);
+  border-radius: 4px;
+}
+
+/* Neural network visualization */
+.neural-canvas {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+}
+
+/* Card styling */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+}
