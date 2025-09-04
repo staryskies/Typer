@@ -46,7 +46,7 @@ export class TrackGenerator {
     }
 
     // Create checkpoints
-    const checkpointCount = 8;
+    const checkpointCount = 24;
     for (let i = 0; i < checkpointCount; i++) {
       const angle = (i / checkpointCount) * Math.PI * 2;
       const innerPoint = {
@@ -67,6 +67,7 @@ export class TrackGenerator {
 
     return {
       walls,
+      generationTime: 0,
       checkpoints,
       startPosition: {
         x: centerX + (innerRadius + outerRadius) / 2,
@@ -153,6 +154,7 @@ export class TrackGenerator {
 
     return {
       walls,
+      generationTime: 0,
       checkpoints,
       startPosition: pathPoints[0],
       startAngle: Math.atan2(
@@ -215,7 +217,7 @@ export class TrackGenerator {
     }
 
     // Create checkpoints
-    const checkpointCount = 12;
+    const checkpointCount = 24;
     for (let i = 0; i < checkpointCount; i++) {
       const pointIndex = Math.floor((i / checkpointCount) * pathPoints.length);
       const point = pathPoints[pointIndex];
@@ -239,9 +241,10 @@ export class TrackGenerator {
 
     return {
       walls,
+      generationTime: 0,
       checkpoints,
       startPosition: pathPoints[0],
-      startAngle: 0
+      startAngle: 90
     };
   }
 
@@ -297,6 +300,7 @@ export class TrackGenerator {
     return {
       walls,
       checkpoints,
+      generationTime: 0,
       startPosition: trackPoints[0],
       startAngle: Math.atan2(
         trackPoints[1].y - trackPoints[0].y,

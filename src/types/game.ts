@@ -20,6 +20,7 @@ export interface Car {
   checkpointsPassed: number;
   brain: NeuralNetwork;
   color: string;
+
 }
 
 export interface Sensor {
@@ -35,6 +36,7 @@ export interface Track {
   checkpoints: Checkpoint[];
   startPosition: Vector2D;
   startAngle: number;
+  generationTime: number;
 }
 
 export interface Wall {
@@ -65,4 +67,5 @@ export interface GameState {
   isRunning: boolean;
   timeElapsed: number;
   maxTime: number;
+  generationTime: number;
 }

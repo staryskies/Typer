@@ -16,7 +16,7 @@ export class GameEngine {
     this.geneticAlgorithm = new GeneticAlgorithm();
     this.lastUpdateTime = Date.now();
     this.generationTime = 0;
-    this.maxGenerationTime = 10000; // 20 seconds per generation (faster)
+    this.maxGenerationTime = 40000; // 20 seconds per generation (faster)
 
     this.gameState = {
       cars: this.geneticAlgorithm.createInitialPopulation(
@@ -28,6 +28,7 @@ export class GameEngine {
       bestFitness: 0,
       isRunning: false,
       timeElapsed: 0,
+      generationTime: 0,
       maxTime: this.maxGenerationTime
     };
   }
@@ -39,10 +40,12 @@ export class GameEngine {
 
     const currentTime = Date.now();
     const deltaTime = Math.min((currentTime - this.lastUpdateTime) / 1000, 0.016); // Cap at 60fps
-    const simulationSpeed = 2.0; // 2x speed simulation
+    const simulationSpeed = 12.0; // 2x speed simulation
     const adjustedDeltaTime = deltaTime * simulationSpeed;
     this.lastUpdateTime = currentTime;
     this.generationTime += adjustedDeltaTime * 1000;
+    this.gameState.generationTime = this.generationTime;
+
 
     // Update each car
     for (const car of this.gameState.cars) {
@@ -65,7 +68,7 @@ export class GameEngine {
 
       // Apply neural network decisions
       car.angle += steering * car.turnSpeed;
-      car.acceleration = acceleration * 400; // Increased acceleration for faster simulation
+      car.acceleration = acceleration * 10; // Increased acceleration for faster simulation
 
       // Update physics with adjusted time
       Physics.updateCarPhysics(car, adjustedDeltaTime);
@@ -80,7 +83,7 @@ export class GameEngine {
       this.checkCheckpointCollisions(car);
 
       // Calculate fitness
-      this.geneticAlgorithm.calculateFitness(car);
+      this.geneticAlgorithm.calculateFitness(car , this.gameState);
     }
 
     // Update best fitness
@@ -128,12 +131,14 @@ export class GameEngine {
     this.gameState.cars = this.geneticAlgorithm.evolvePopulation(
       this.gameState.cars,
       this.track.startPosition,
-      this.track.startAngle
+      this.track.startAngle,
+      this.gameState
     );
 
     // Reset generation state
     this.gameState.generation++;
     this.generationTime = 0;
+    
     this.gameState.timeElapsed = 0;
   }
 
@@ -175,6 +180,12 @@ export class GameEngine {
     return this.gameState.cars.filter(car => car.alive);
   }
 
+  getTimeElapsed(): number {
+    return this.gameState.timeElapsed;
+  }
+
+
+
   setPopulationSize(size: number): void {
     if (size !== this.gameState.cars.length) {
       this.gameState.cars = this.geneticAlgorithm.createInitialPopulation(
@@ -184,4 +195,23 @@ export class GameEngine {
       );
     }
   }
+
+  public setTrack(newTrack: Track): void {
+    this.track = newTrack;
+
+    // Recreate the cars on the new track
+    this.gameState.cars = this.geneticAlgorithm.createInitialPopulation(
+      this.gameState.cars.length,
+      newTrack.startPosition,
+      newTrack.startAngle
+    );
+
+    // Reset state for new track
+    this.gameState.generation = 1;
+    this.gameState.bestFitness = 0;
+    this.gameState.timeElapsed = 0;
+    this.generationTime = 0;
+    this.gameState.isRunning = false;
+  }
+
 }

@@ -6,11 +6,13 @@ import { TrackGenerator } from '@/utils/track';
 import { Car, Track } from '@/types/game';
 
 interface GameCanvasProps {
+  track: Track;
   isTraining: boolean;
   generation: number;
   setGeneration: (gen: number) => void;
   setBestFitness: (fitness: number) => void;
   populationSize: number;
+  setTrack: (track: Track) => void;
   onCarSelect?: (car: Car) => void;
   onStatsUpdate?: (stats: { aliveCount: number; averageFitness: number; timeElapsed: number; bestCar: Car | null }) => void;
 }
@@ -22,20 +24,24 @@ const GameCanvas = React.forwardRef<any, GameCanvasProps>(({
   setBestFitness,
   populationSize,
   onCarSelect,
-  onStatsUpdate
+  onStatsUpdate,
+  track,
+  setTrack
 }, ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const gameEngineRef = useRef<GameEngine | null>(null);
   const animationFrameRef = useRef<number>();
   const [selectedCar, setSelectedCar] = useState<Car | null>(null);
-
   // Initialize game engine
   useEffect(() => {
     if (!canvasRef.current) return;
 
     const canvas = canvasRef.current;
-    const track = TrackGenerator.createSimpleOvalTrack(canvas.width, canvas.height);
-    gameEngineRef.current = new GameEngine(track, populationSize);
+    const newTrack = TrackGenerator.createFigureEightTrack(canvasRef.current.width, canvasRef.current.height);
+    setTrack(newTrack);
+    gameEngineRef.current?.setTrack(newTrack); 
+
+    gameEngineRef.current = new GameEngine(newTrack, populationSize);
   }, [populationSize]);
 
   // Handle training state changes
@@ -49,6 +55,18 @@ const GameCanvas = React.forwardRef<any, GameCanvasProps>(({
     }
   }, [isTraining]);
 
+  useEffect(() => {
+    if (!canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const initialTrack = TrackGenerator.createSimpleOvalTrack(canvas.width, canvas.height);
+
+    setTrack(initialTrack); // update parent state
+    gameEngineRef.current = new GameEngine(initialTrack, populationSize); // use same track
+  }, [populationSize]);
+
+  
+
   // Game loop with performance optimization
   const gameLoop = useCallback(() => {
     if (!gameEngineRef.current || !canvasRef.current) return;
@@ -58,6 +76,14 @@ const GameCanvas = React.forwardRef<any, GameCanvasProps>(({
     // Update parent component state (throttled)
     setGeneration(gameState.generation);
     setBestFitness(gameState.bestFitness);
+
+    console.log(generation)
+
+    if (generation > 20) {
+      const newTrack = TrackGenerator.createFigureEightTrack(canvasRef.current.width, canvasRef.current.height);
+      setTrack(newTrack);
+      gameEngineRef.current = new GameEngine(newTrack, populationSize); // use the same track
+    }
 
     // Update additional stats
     if (onStatsUpdate) {

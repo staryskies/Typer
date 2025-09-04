@@ -7,8 +7,10 @@ import ControlPanel from '@/components/ControlPanel'
 import StatsPanel from '@/components/StatsPanel'
 import { Car } from '@/types/game'
 import { NeuralNetworkUtils } from '@/utils/neuralNetwork'
+import { TrackGenerator } from '@/utils/track'
 
 export default function Home() {
+  const [track, setTrack] = useState(TrackGenerator.createSimpleOvalTrack(800, 600))
   const [isTraining, setIsTraining] = useState(false)
   const [generation, setGeneration] = useState(1)
   const [bestFitness, setBestFitness] = useState(0)
@@ -114,6 +116,8 @@ export default function Home() {
           <div className="lg:col-span-3">
             <div className="card rounded p-4">
               <GameCanvas
+                track={track}
+                setTrack={setTrack}
                 isTraining={isTraining}
                 generation={generation}
                 setGeneration={setGeneration}
@@ -142,6 +146,8 @@ export default function Home() {
                     <div>Speed: <span className="text-white">{Math.round((selectedCar || bestCar)?.speed || 0)}</span></div>
                     <div>Checkpoints: <span className="text-white">{(selectedCar || bestCar)?.checkpointsPassed || 0}</span></div>
                     <div>Distance: <span className="text-white">{Math.round((selectedCar || bestCar)?.distanceTraveled || 0)}</span></div>
+                    <div>Speed: <span className="text-white">{Math.round((selectedCar || bestCar)?.speed || 0)}</span></div>
+                    <div>Rotation: <span className="text-white">{Math.round((selectedCar || bestCar)?.turnSpeed || 0)}</span></div>
                   </div>
                   <StatsPanel
                     generation={generation}

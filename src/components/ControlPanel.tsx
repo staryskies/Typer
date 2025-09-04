@@ -99,11 +99,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         <div className="border-t border-gray-600 pt-4">
           <h4 className="text-sm font-semibold mb-2">Racing Circuit Info</h4>
           <div className="text-xs text-gray-300 space-y-1">
-            <div>• <span className="text-blue-400">Rough racing circuit</span> with alternating bends</div>
-            <div>• <span className="text-green-400">Start/Finish line</span> with lap counting</div>
-            <div>• <span className="text-purple-400">2x speed simulation</span> for faster training</div>
-            <div>• <span className="text-yellow-400">Enhanced sensors</span> (300px range)</div>
-            <div>• Fitness rewards speed & aggressive driving</div>
           </div>
         </div>
       </div>

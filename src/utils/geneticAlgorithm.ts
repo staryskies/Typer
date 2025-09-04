@@ -1,4 +1,4 @@
-import { Car, NeuralNetwork, Sensor, Vector2D } from '@/types/game';
+import { Car, NeuralNetwork, Sensor, Vector2D, GameState } from '@/types/game';
 import { NeuralNetworkUtils } from './neuralNetwork';
 
 export class GeneticAlgorithm {
@@ -7,9 +7,9 @@ export class GeneticAlgorithm {
   private elitismRate: number;
 
   constructor(
-    mutationRate: number = 0.3,
-    mutationStrength: number = 0.5,
-    elitismRate: number = 0.3
+    mutationRate: number = 0.5,
+    mutationStrength: number = 0.7,
+    elitismRate: number = 0.05
   ) {
     this.mutationRate = mutationRate;
     this.mutationStrength = mutationStrength;
@@ -37,7 +37,7 @@ export class GeneticAlgorithm {
         maxSpeed: 125, 
         acceleration: 0,
         friction: 0.92, 
-        turnSpeed: 0.7, 
+        turnSpeed: 6, 
         sensors: this.createSensors(sensorCount),
         fitness: 0,
         alive: true,
@@ -78,7 +78,7 @@ export class GeneticAlgorithm {
     return colors[Math.floor(Math.random() * colors.length)];
   }
 
-  calculateFitness(car: Car): number {
+  calculateFitness(car: Car , Gamestate: GameState): number {
     let fitness = 0;
 
     // Distance traveled is the primary fitness component
@@ -92,13 +92,9 @@ export class GeneticAlgorithm {
     fitness += lapsCompleted * 2000;
 
     // Speed bonus - reward fast driving
-    fitness += car.speed * 0.001;
+    fitness += car.speed * 0.0001;
 
-    // Bonus for maintaining high average speed
-    const averageSpeed = car.distanceTraveled / Math.max(1, car.distanceTraveled / car.speed);
-    if (averageSpeed > 100) {
-      fitness += (averageSpeed - 100) * 2;
-    }
+    // Bonus for maintaining high average spee
 
     // Penalty for crashing (being dead)
     if (!car.alive) {
@@ -111,17 +107,21 @@ export class GeneticAlgorithm {
     }
 
     // Bonus for aggressive but controlled driving
-    if (car.speed > 150 && car.alive) {
-      fitness += 50;
-    }
 
     car.fitness = Math.max(0, fitness);
+
+    car.fitness += Gamestate.generationTime / 10;
+
+
+    
     return car.fitness;
+
+  
   }
 
-  evolvePopulation(population: Car[], startPosition: Vector2D, startAngle: number): Car[] {
+  evolvePopulation(population: Car[], startPosition: Vector2D, startAngle: number , Gamestate: GameState): Car[] {
     // Calculate fitness for all cars
-    population.forEach(car => this.calculateFitness(car));
+    population.forEach(car => this.calculateFitness(car , Gamestate));
 
     // Sort by fitness (descending)
     population.sort((a, b) => b.fitness - a.fitness);
@@ -145,7 +145,7 @@ export class GeneticAlgorithm {
     const newPopulation: Car[] = [];
 
     // Elitist selection: only keep top 20% as parents
-    const eliteCount = Math.floor(population.length * 0.2);
+    const eliteCount = Math.floor(population.length * 0.3);
     const eliteParents = population.slice(0, eliteCount);
 
     // Keep only the absolute best car unchanged
@@ -165,7 +165,7 @@ export class GeneticAlgorithm {
 
       let childBrain: NeuralNetwork;
 
-      if (Math.random() < 0.9) { // 90% chance of crossover
+      if (Math.random() < 0.7) { //70% chance of crossover
         childBrain = NeuralNetworkUtils.crossover(parent1.brain, parent2.brain);
       } else {
         childBrain = NeuralNetworkUtils.copyNetwork(parent1.brain);
