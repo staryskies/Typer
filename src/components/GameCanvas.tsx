@@ -33,16 +33,7 @@ const GameCanvas = React.forwardRef<any, GameCanvasProps>(({
   const animationFrameRef = useRef<number>();
   const [selectedCar, setSelectedCar] = useState<Car | null>(null);
   // Initialize game engine
-  useEffect(() => {
-    if (!canvasRef.current) return;
 
-    const canvas = canvasRef.current;
-    const newTrack = TrackGenerator.createFigureEightTrack(canvasRef.current.width, canvasRef.current.height);
-    setTrack(newTrack);
-    gameEngineRef.current?.setTrack(newTrack); 
-
-    gameEngineRef.current = new GameEngine(newTrack, populationSize);
-  }, [populationSize]);
 
   // Handle training state changes
   useEffect(() => {
@@ -77,13 +68,6 @@ const GameCanvas = React.forwardRef<any, GameCanvasProps>(({
     setGeneration(gameState.generation);
     setBestFitness(gameState.bestFitness);
 
-    console.log(generation)
-
-    if (generation > 20) {
-      const newTrack = TrackGenerator.createFigureEightTrack(canvasRef.current.width, canvasRef.current.height);
-      setTrack(newTrack);
-      gameEngineRef.current = new GameEngine(newTrack, populationSize); // use the same track
-    }
 
     // Update additional stats
     if (onStatsUpdate) {
@@ -281,6 +265,33 @@ const GameCanvas = React.forwardRef<any, GameCanvasProps>(({
     }
   };
 
+  const changeTrack = (TrackChoice: string) => {
+    if (!canvasRef.current) return;
+
+    let newTrack: Track;
+    const canvas = canvasRef.current;
+
+    if (TrackChoice === "FigureEight") {
+      newTrack = TrackGenerator.createFigureEightTrack(canvas.width, canvas.height);
+    } else {
+      newTrack = TrackGenerator.createSimpleOvalTrack(canvas.width, canvas.height);
+    }
+
+    // Update parent state
+    setTrack(newTrack);
+
+    // Recreate the GameEngine so it's fully clean
+    gameEngineRef.current = new GameEngine(newTrack, populationSize);
+    
+    // Clear selected car since all old cars are gone
+    setSelectedCar(null);
+
+    // Render immediately to reflect the new track
+    render();
+  };
+
+
+
   return (
     <div className="bg-gray-800 rounded-lg p-4">
       <div className="flex justify-between items-center mb-4">
@@ -291,6 +302,20 @@ const GameCanvas = React.forwardRef<any, GameCanvasProps>(({
           className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded transition-colors"
         >
           Reset
+        </button>
+        <button
+          onClick={() => changeTrack("FigureEight")}
+          disabled={isTraining}
+          className="px-2 py-2 bg-dark-blue-200 hover:bg-dark-blue-300 disabled:opacity-50 disabled:allowed text-white rounded transition-colors"
+        >
+          Change Track Figure Eight
+        </button>
+        <button
+          onClick={() => changeTrack("SimpleOval")}
+          disabled={isTraining}
+          className="px-2 py-2 bg-dark-blue-200 hover:bg-dark-blue-300 disabled:opacity-50 disabled:allowed text-white rounded transition-colors"
+        >
+          Change Track Oval
         </button>
       </div>
       

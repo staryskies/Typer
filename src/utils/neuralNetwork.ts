@@ -170,7 +170,7 @@ export class NeuralNetworkUtils {
     };
   }
 
-  static getNetworkInputs(sensorDistances: number[], speed: number, angle: number): number[] {
+  static getNetworkInputs(sensorDistances: number[], speed: number, angle: number ,braking: number): number[] {
     // Normalize sensor distances (0-1 range)
     const normalizedSensors = sensorDistances.map(distance => Math.min(distance / 200, 1));
     
@@ -180,17 +180,18 @@ export class NeuralNetworkUtils {
     // Normalize angle (-1 to 1 range)
     const normalizedAngle = Math.sin(angle);
     const normalizedAngleCos = Math.cos(angle);
+    const normalizedBraking = Math.min(braking / 100, 1);
 
-    return [...normalizedSensors, normalizedSpeed, normalizedAngle, normalizedAngleCos];
+    return [...normalizedSensors, normalizedSpeed, normalizedAngle, normalizedAngleCos, normalizedBraking];
   }
 
-  static interpretOutputs(outputs: number[]): { steering: number; acceleration: number } {
-    // outputs[0] = steering (-1 to 1)
-    // outputs[1] = acceleration (0 to 1)
-    
-    const steering = (outputs[0] - 0.5) * 2; // Convert from 0-1 to -1-1
-    const acceleration = outputs[1]; // Keep 0-1 range
-
-    return { steering, acceleration };
+  static interpretOutputs(outputs: number[]) {
+    return {
+      steering: outputs[0] * 2 - 1, // -1 = full left, +1 = full right
+      acceleration: outputs[1],      // 0 = no throttle, 1 = full throttle
+      braking: outputs[2]            // 0 = no brake, 1 = full brake
+    };
   }
+
+
 }

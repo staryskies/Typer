@@ -48,9 +48,25 @@ export class Physics {
   }
 
   static updateCarPhysics(car: Car, deltaTime: number): void {
-    // Apply friction
-    car.velocity.x *= car.friction;
-    car.velocity.y *= car.friction;
+    const friction = 5; // units per second
+
+    // Calculate current speed
+    let currentSpeed = Math.sqrt(car.velocity.x ** 2 + car.velocity.y ** 2);
+
+    // Apply friction gradually
+    if (currentSpeed > 0) {
+      const frictionAmount = friction * deltaTime;
+      currentSpeed = Math.max(currentSpeed - frictionAmount, 0);
+
+      // Adjust velocity vector proportionally
+      if (currentSpeed > 0) {
+        car.velocity.x = (car.velocity.x / currentSpeed) * currentSpeed;
+        car.velocity.y = (car.velocity.y / currentSpeed) * currentSpeed;
+      } else {
+        car.velocity.x = 0;
+        car.velocity.y = 0;
+      }
+    }
 
     // Calculate forward direction
     const forward = {
@@ -58,25 +74,27 @@ export class Physics {
       y: Math.sin(car.angle)
     };
 
-    // Apply acceleration in forward direction
-    car.velocity.x += forward.x * car.acceleration * deltaTime;
-    car.velocity.y += forward.y * car.acceleration * deltaTime;
+    // Apply acceleration force
+    const accelerationForce = car.acceleration * 100; // scaled up
+    car.velocity.x += forward.x * accelerationForce * deltaTime;
+    car.velocity.y += forward.y * accelerationForce * deltaTime;
 
-    // Limit speed
-    const currentSpeed = Math.sqrt(car.velocity.x ** 2 + car.velocity.y ** 2);
-    if (currentSpeed > car.maxSpeed) {
-      car.velocity.x = (car.velocity.x / currentSpeed) * car.maxSpeed;
-      car.velocity.y = (car.velocity.y / currentSpeed) * car.maxSpeed;
+    // Clamp to max speed
+    const newSpeed = Math.sqrt(car.velocity.x ** 2 + car.velocity.y ** 2);
+    if (newSpeed > car.maxSpeed) {
+      car.velocity.x = (car.velocity.x / newSpeed) * car.maxSpeed;
+      car.velocity.y = (car.velocity.y / newSpeed) * car.maxSpeed;
     }
 
     // Update position
     car.position.x += car.velocity.x * deltaTime;
     car.position.y += car.velocity.y * deltaTime;
 
-    // Update distance traveled
-    car.distanceTraveled += currentSpeed * deltaTime;
-    car.speed = currentSpeed;
+    // Update distance traveled and speed
+    car.distanceTraveled += newSpeed * deltaTime;
+    car.speed = newSpeed;
   }
+
 
   static checkWallCollision(car: Car, walls: Wall[]): boolean {
     const carRadius = 8; // Car collision radius

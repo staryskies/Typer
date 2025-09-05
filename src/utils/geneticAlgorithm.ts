@@ -9,7 +9,7 @@ export class GeneticAlgorithm {
   constructor(
     mutationRate: number = 0.5,
     mutationStrength: number = 0.7,
-    elitismRate: number = 0.05
+    elitismRate: number = 0.3
   ) {
     this.mutationRate = mutationRate;
     this.mutationStrength = mutationStrength;
@@ -23,9 +23,9 @@ export class GeneticAlgorithm {
   ): Car[] {
     const population: Car[] = [];
     const sensorCount = 5;
-    const inputNodes = sensorCount + 3; // sensors + speed + angle_sin + angle_cos
+    const inputNodes = sensorCount + 4; // sensors + speed + angle_sin + angle_cos
     const hiddenNodes = 8;
-    const outputNodes = 2; // steering + acceleration
+    const outputNodes = 3;; // steering + acceleration + braking
 
     for (let i = 0; i < populationSize; i++) {
       const car: Car = {
@@ -36,6 +36,7 @@ export class GeneticAlgorithm {
         speed: 0,
         maxSpeed: 125, 
         acceleration: 0,
+        braking: 0,
         friction: 0.92, 
         turnSpeed: 6, 
         sensors: this.createSensors(sensorCount),
@@ -78,46 +79,31 @@ export class GeneticAlgorithm {
     return colors[Math.floor(Math.random() * colors.length)];
   }
 
-  calculateFitness(car: Car , Gamestate: GameState): number {
+  calculateFitness(car: Car, gameState: GameState): number {
     let fitness = 0;
 
-    // Distance traveled is the primary fitness component
+    // Distance traveled
     fitness += car.distanceTraveled * 0.05;
 
-    // Major bonus for passing checkpoints (racing progress)
+    // Bonus for checkpoints
     fitness += car.checkpointsPassed * 800;
 
-    // Bonus for completing full laps
-    const lapsCompleted = Math.floor(car.checkpointsPassed / 12);
-    fitness += lapsCompleted * 2000;
+    // Survive longer = better
+    fitness += gameState.generationTime / 20;
 
-    // Speed bonus - reward fast driving
-    fitness += car.speed * 0.0001;
-
-    // Bonus for maintaining high average spee
-
-    // Penalty for crashing (being dead)
+    // Penalize crashing
     if (!car.alive) {
-      fitness *= 0.3; // Harsher penalty for crashing
+      fitness *= 0.3;
     }
 
-    // Penalty for going too slow
-    if (car.speed < 20) {
-      fitness -= 20;
+    if (car.braking > 0.8) {
+      fitness -= 0.1; // small penalty for holding brake constantly
     }
-
-    // Bonus for aggressive but controlled driving
 
     car.fitness = Math.max(0, fitness);
-
-    car.fitness += Gamestate.generationTime / 10;
-
-
-    
     return car.fitness;
-
-  
   }
+
 
   evolvePopulation(population: Car[], startPosition: Vector2D, startAngle: number , Gamestate: GameState): Car[] {
     // Calculate fitness for all cars
@@ -137,7 +123,7 @@ export class GeneticAlgorithm {
     const diversityThreshold = Math.max(100, averageFitness * 0.1); // 10% of average or minimum 100
     const isLowDiversity = fitnessRange < diversityThreshold;
 
-    const adaptiveMutationRate = isLowDiversity ? 0.3 : 0.05; // High mutation if low diversity
+    const adaptiveMutationRate = isLowDiversity ? 0.8 : 0.5; // High mutation if low diversity
     const adaptiveMutationStrength = isLowDiversity ? 1.5 : 0.3; // Strong mutations if low diversity
 
     console.log(`Fitness range: ${fitnessRange.toFixed(2)}, Diversity: ${isLowDiversity ? 'LOW' : 'HIGH'}, Mutation rate: ${adaptiveMutationRate}`);
@@ -214,6 +200,7 @@ export class GeneticAlgorithm {
       angle: startAngle,
       speed: 0,
       maxSpeed: 150,
+      braking: 0,
       acceleration: 0,
       friction: 0.95,
       turnSpeed: 0.03,

@@ -11,6 +11,7 @@ export interface Car {
   speed: number;
   maxSpeed: number;
   acceleration: number;
+  braking: number;
   friction: number;
   turnSpeed: number;
   sensors: Sensor[];

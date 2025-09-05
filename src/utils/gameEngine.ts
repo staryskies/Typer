@@ -2,6 +2,10 @@ import { Car, Track, GameState, Checkpoint } from '@/types/game';
 import { Physics } from './physics';
 import { NeuralNetworkUtils } from './neuralNetwork';
 import { GeneticAlgorithm } from './geneticAlgorithm';
+import { TrackGenerator } from './track';
+
+
+
 
 export class GameEngine {
   private gameState: GameState;
@@ -40,7 +44,7 @@ export class GameEngine {
 
     const currentTime = Date.now();
     const deltaTime = Math.min((currentTime - this.lastUpdateTime) / 1000, 0.016); // Cap at 60fps
-    const simulationSpeed = 12.0; // 2x speed simulation
+    const simulationSpeed = 2.0; // 2x speed simulation
     const adjustedDeltaTime = deltaTime * simulationSpeed;
     this.lastUpdateTime = currentTime;
     this.generationTime += adjustedDeltaTime * 1000;
@@ -59,16 +63,25 @@ export class GameEngine {
       const inputs = NeuralNetworkUtils.getNetworkInputs(
         sensorDistances,
         car.speed,
-        car.angle
+        car.angle,
+        car.braking
       );
 
       // Get neural network outputs
       const outputs = NeuralNetworkUtils.feedForward(car.brain, inputs);
-      const { steering, acceleration } = NeuralNetworkUtils.interpretOutputs(outputs);
+      const { steering, acceleration, braking } = NeuralNetworkUtils.interpretOutputs(outputs);
 
-      // Apply neural network decisions
       car.angle += steering * car.turnSpeed;
-      car.acceleration = acceleration * 10; // Increased acceleration for faster simulation
+
+      // Assign braking value to the car
+      car.braking = braking;
+
+      // Apply either braking or throttle
+      if (braking > 0.1) {
+        car.acceleration = -braking * car.maxSpeed * 0.8; // braking force
+      } else {
+        car.acceleration = acceleration * 10; // throttle force
+      }
 
       // Update physics with adjusted time
       Physics.updateCarPhysics(car, adjustedDeltaTime);
@@ -196,8 +209,8 @@ export class GameEngine {
     }
   }
 
-  public setTrack(newTrack: Track): void {
-    this.track = newTrack;
+  public setTrack(newTrack : Track): void {
+
 
     // Recreate the cars on the new track
     this.gameState.cars = this.geneticAlgorithm.createInitialPopulation(
@@ -205,13 +218,6 @@ export class GameEngine {
       newTrack.startPosition,
       newTrack.startAngle
     );
-
-    // Reset state for new track
-    this.gameState.generation = 1;
-    this.gameState.bestFitness = 0;
-    this.gameState.timeElapsed = 0;
-    this.generationTime = 0;
-    this.gameState.isRunning = false;
   }
 
 }

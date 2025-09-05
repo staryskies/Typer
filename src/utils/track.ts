@@ -171,11 +171,11 @@ export class TrackGenerator {
     const centerX = width / 2;
     const centerY = height / 2;
     const loopRadius = Math.min(width, height) * 0.15;
-    const trackWidth = 40;
+    const trackWidth = 80;
 
     // Create figure-8 path points
     const pathPoints: Vector2D[] = [];
-    const segments = 64;
+    const segments = 128;
 
     for (let i = 0; i < segments; i++) {
       const t = (i / segments) * Math.PI * 2;
@@ -188,7 +188,6 @@ export class TrackGenerator {
       pathPoints.push({ x, y });
     }
 
-    // Create walls along the path
     for (let i = 0; i < pathPoints.length; i++) {
       const current = pathPoints[i];
       const next = pathPoints[(i + 1) % pathPoints.length];
@@ -201,6 +200,16 @@ export class TrackGenerator {
       if (length > 0) {
         const perpX = (-dy / length) * trackWidth / 2;
         const perpY = (dx / length) * trackWidth / 2;
+
+        // ✅ Skip walls near the center to create a pass-through
+        const distanceFromCenter = Math.sqrt(
+          (current.x - centerX) ** 2 + (current.y - centerY) ** 2
+        );
+
+        // If close to center, leave open space
+        if (distanceFromCenter < loopRadius * 0.6) {
+          continue;
+        }
 
         // Outer wall
         walls.push({
@@ -215,6 +224,7 @@ export class TrackGenerator {
         });
       }
     }
+
 
     // Create checkpoints
     const checkpointCount = 24;
@@ -244,7 +254,7 @@ export class TrackGenerator {
       generationTime: 0,
       checkpoints,
       startPosition: pathPoints[0],
-      startAngle: 90
+      startAngle: 180
     };
   }
 

@@ -89,7 +89,8 @@ export default function Home() {
     const inputs = NeuralNetworkUtils.getNetworkInputs(
       sensorDistances,
       carToVisualize.speed,
-      carToVisualize.angle
+      carToVisualize.angle,
+      carToVisualize.braking
     )
 
     const outputs = NeuralNetworkUtils.feedForward(carToVisualize.brain, inputs)
@@ -148,6 +149,7 @@ export default function Home() {
                     <div>Distance: <span className="text-white">{Math.round((selectedCar || bestCar)?.distanceTraveled || 0)}</span></div>
                     <div>Speed: <span className="text-white">{Math.round((selectedCar || bestCar)?.speed || 0)}</span></div>
                     <div>Rotation: <span className="text-white">{Math.round((selectedCar || bestCar)?.turnSpeed || 0)}</span></div>
+                    <div>Braking: <span className="text-white">{Math.round((selectedCar || bestCar)?.braking || 0)}</span></div>
                   </div>
                   <StatsPanel
                     generation={generation}
@@ -172,6 +174,8 @@ export default function Home() {
                 setPopulationSize={setPopulationSize}
                 onReset={handleReset}
               />
+
+        
             </div>
           </div>
         </div>
