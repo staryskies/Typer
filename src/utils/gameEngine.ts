@@ -20,7 +20,7 @@ export class GameEngine {
     this.geneticAlgorithm = new GeneticAlgorithm();
     this.lastUpdateTime = Date.now();
     this.generationTime = 0;
-    this.maxGenerationTime = 40000; // 20 seconds per generation (faster)
+    this.maxGenerationTime = 50000; // 20 seconds per generation (faster)
 
     this.gameState = {
       cars: this.geneticAlgorithm.createInitialPopulation(
@@ -44,7 +44,7 @@ export class GameEngine {
 
     const currentTime = Date.now();
     const deltaTime = Math.min((currentTime - this.lastUpdateTime) / 1000, 0.016); // Cap at 60fps
-    const simulationSpeed = 2.0; // 2x speed simulation
+    const simulationSpeed = 4.0; // 2x speed simulation
     const adjustedDeltaTime = deltaTime * simulationSpeed;
     this.lastUpdateTime = currentTime;
     this.generationTime += adjustedDeltaTime * 1000;
@@ -78,7 +78,7 @@ export class GameEngine {
 
       // Apply either braking or throttle
       if (braking > 0.1) {
-        car.acceleration = -braking * car.maxSpeed * 0.8; // braking force
+        car.acceleration = car.acceleration/1.5;
       } else {
         car.acceleration = acceleration * 10; // throttle force
       }

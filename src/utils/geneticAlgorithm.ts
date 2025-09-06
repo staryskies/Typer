@@ -97,7 +97,7 @@ export class GeneticAlgorithm {
     }
 
     if (car.braking > 0.8) {
-      fitness -= 0.1; // small penalty for holding brake constantly
+      fitness -= 50; // small penalty for holding brake constantly
     }
 
     car.fitness = Math.max(0, fitness);

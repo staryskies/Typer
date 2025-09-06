@@ -170,20 +170,20 @@ export class NeuralNetworkUtils {
     };
   }
 
-  static getNetworkInputs(sensorDistances: number[], speed: number, angle: number ,braking: number): number[] {
-    // Normalize sensor distances (0-1 range)
+  static getNetworkInputs(sensorDistances: number[], speed: number, angle: number, braking: number, maxBrakeForce = 20): number[] {
     const normalizedSensors = sensorDistances.map(distance => Math.min(distance / 200, 1));
-    
-    // Normalize speed (0-1 range, assuming max speed of 200)
     const normalizedSpeed = Math.min(speed / 200, 1);
-    
-    // Normalize angle (-1 to 1 range)
+
+    // Normalize angle to sine and cosine for better handling of circular data
     const normalizedAngle = Math.sin(angle);
     const normalizedAngleCos = Math.cos(angle);
-    const normalizedBraking = Math.min(braking / 100, 1);
+
+    // Normalize braking with configurable max force
+    const normalizedBraking = Math.min(braking / maxBrakeForce, 1);
 
     return [...normalizedSensors, normalizedSpeed, normalizedAngle, normalizedAngleCos, normalizedBraking];
   }
+
 
   static interpretOutputs(outputs: number[]) {
     return {

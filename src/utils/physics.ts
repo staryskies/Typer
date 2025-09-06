@@ -47,53 +47,32 @@ export class Physics {
     return null;
   }
 
-  static updateCarPhysics(car: Car, deltaTime: number): void {
-    const friction = 5; // units per second
+  static updateCarPhysics(car: Car, deltaTime: number) {
+    const friction = 0.90;      // Base natural slowdown
+    const brakeFactor = 6.0;    // Adjust for stopping power
+    const accelFactor = 2.0;    // Acceleration strength
 
-    // Calculate current speed
-    let currentSpeed = Math.sqrt(car.velocity.x ** 2 + car.velocity.y ** 2);
+    // Apply throttle to speed
+    car.speed += car.acceleration * accelFactor * deltaTime;
 
-    // Apply friction gradually
-    if (currentSpeed > 0) {
-      const frictionAmount = friction * deltaTime;
-      currentSpeed = Math.max(currentSpeed - frictionAmount, 0);
+    // Apply braking (directly reduces speed)
+    car.speed -= brakeFactor * car.braking;
 
-      // Adjust velocity vector proportionally
-      if (currentSpeed > 0) {
-        car.velocity.x = (car.velocity.x / currentSpeed) * currentSpeed;
-        car.velocity.y = (car.velocity.y / currentSpeed) * currentSpeed;
-      } else {
-        car.velocity.x = 0;
-        car.velocity.y = 0;
-      }
+    // Full stop if speed is very low
+    if (car.speed < 0.05) {
+      car.speed = 0;
     }
+    // Apply natural friction
+    car.speed *= friction;
 
-    // Calculate forward direction
-    const forward = {
-      x: Math.cos(car.angle),
-      y: Math.sin(car.angle)
-    };
-
-    // Apply acceleration force
-    const accelerationForce = car.acceleration * 100; // scaled up
-    car.velocity.x += forward.x * accelerationForce * deltaTime;
-    car.velocity.y += forward.y * accelerationForce * deltaTime;
-
-    // Clamp to max speed
-    const newSpeed = Math.sqrt(car.velocity.x ** 2 + car.velocity.y ** 2);
-    if (newSpeed > car.maxSpeed) {
-      car.velocity.x = (car.velocity.x / newSpeed) * car.maxSpeed;
-      car.velocity.y = (car.velocity.y / newSpeed) * car.maxSpeed;
-    }
+    // Clamp speed to prevent reversing unless you want reverse
+    car.speed = Math.max(car.speed, 0);
 
     // Update position
-    car.position.x += car.velocity.x * deltaTime;
-    car.position.y += car.velocity.y * deltaTime;
-
-    // Update distance traveled and speed
-    car.distanceTraveled += newSpeed * deltaTime;
-    car.speed = newSpeed;
+    car.position.x += Math.cos(car.angle) * car.speed * deltaTime;
+    car.position.y += Math.sin(car.angle) * car.speed * deltaTime;
   }
+
 
 
   static checkWallCollision(car: Car, walls: Wall[]): boolean {
