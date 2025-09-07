@@ -29,7 +29,11 @@ export class NeuralNetworkUtils {
     }
 
     for (let i = 0; i < outputNodes; i++) {
-      biasOutput[i] = this.randomWeight();
+      if (i === 1) { // acceleration output (index 1)
+        biasOutput[i] = 0.5; // Bias towards acceleration
+      } else {
+        biasOutput[i] = this.randomWeight();
+      }
     }
 
     return {
@@ -72,7 +76,9 @@ export class NeuralNetworkUtils {
   }
 
   static sigmoid(x: number): number {
-    return 1 / (1 + Math.exp(-x));
+    // Clamp input to prevent overflow
+    const clampedX = Math.max(-500, Math.min(500, x));
+    return 1 / (1 + Math.exp(-clampedX));
   }
 
   static tanh(x: number): number {
@@ -80,7 +86,7 @@ export class NeuralNetworkUtils {
   }
 
   static randomWeight(): number {
-    return (Math.random() - 0.5) * 2; // Random value between -1 and 1
+    return (Math.random() - 0.5) * 4; // Random value between -2 and 2 for stronger initial signals
   }
 
   static mutate(network: NeuralNetwork, mutationRate: number, mutationStrength: number): NeuralNetwork {

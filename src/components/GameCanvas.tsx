@@ -272,7 +272,7 @@ const GameCanvas = React.forwardRef<any, GameCanvasProps>(({
     const canvas = canvasRef.current;
 
     if (TrackChoice === "FigureEight") {
-      newTrack = TrackGenerator.createFigureEightTrack(canvas.width, canvas.height);
+      newTrack = TrackGenerator.createFigureEightTrack(canvas.width * 1.3, canvas.height * 1.2);
     } else {
       newTrack = TrackGenerator.createSimpleOvalTrack(canvas.width, canvas.height);
     }

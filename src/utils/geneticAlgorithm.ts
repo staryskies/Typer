@@ -89,7 +89,7 @@ export class GeneticAlgorithm {
     fitness += car.checkpointsPassed * 800;
 
     // Survive longer = better
-    fitness += gameState.generationTime / 20;
+    fitness += gameState.generationTime / 100;
 
     // Penalize crashing
     if (!car.alive) {

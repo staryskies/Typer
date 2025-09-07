@@ -171,7 +171,7 @@ export class TrackGenerator {
     const centerX = width / 2;
     const centerY = height / 2;
     const loopRadius = Math.min(width, height) * 0.15;
-    const trackWidth = 80;
+    const trackWidth = 60;
 
     // Create figure-8 path points
     const pathPoints: Vector2D[] = [];

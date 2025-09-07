@@ -48,15 +48,15 @@ export class Physics {
   }
 
   static updateCarPhysics(car: Car, deltaTime: number) {
-    const friction = 0.90;      // Base natural slowdown
-    const brakeFactor = 6.0;    // Adjust for stopping power
-    const accelFactor = 2.0;    // Acceleration strength
+    const friction = 0.98;      // Reduced friction to allow cars to maintain speed
+    const brakeFactor = 3.0;    // Reduced braking force
+    const accelFactor = 50.0;    // Increased acceleration strength
 
     // Apply throttle to speed
     car.speed += car.acceleration * accelFactor * deltaTime;
 
     // Apply braking (directly reduces speed)
-    car.speed -= brakeFactor * car.braking;
+    car.speed -= brakeFactor * car.braking * deltaTime;
 
     // Full stop if speed is very low
     if (car.speed < 0.05) {

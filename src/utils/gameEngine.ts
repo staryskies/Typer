@@ -71,6 +71,9 @@ export class GameEngine {
       const outputs = NeuralNetworkUtils.feedForward(car.brain, inputs);
       const { steering, acceleration, braking } = NeuralNetworkUtils.interpretOutputs(outputs);
 
+      // Debug logging for first car only
+
+
       car.angle += steering * car.turnSpeed;
 
       // Assign braking value to the car
@@ -78,9 +81,11 @@ export class GameEngine {
 
       // Apply either braking or throttle
       if (braking > 0.1) {
-        car.acceleration = car.acceleration/1.5;
+        car.acceleration = 0; // Stop accelerating when braking
       } else {
-        car.acceleration = acceleration * 10; // throttle force
+        // Clamp acceleration to reasonable range and scale appropriately
+        const clampedAccel = Math.max(0, Math.min(1, acceleration));
+        car.acceleration = clampedAccel * 5; // Reduced multiplier for more reasonable acceleration
       }
 
       // Update physics with adjusted time
