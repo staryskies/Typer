@@ -48,9 +48,9 @@ export class Physics {
   }
 
   static updateCarPhysics(car: Car, deltaTime: number) {
-    const friction = 0.98;      // Reduced friction to allow cars to maintain speed
+    const friction = 0.96;      // Reduced friction to allow cars to maintain speed
     const brakeFactor = 3.0;    // Reduced braking force
-    const accelFactor = 50.0;    // Increased acceleration strength
+    const accelFactor = 15.0;    // Increased acceleration strength
 
     // Apply throttle to speed
     car.speed += car.acceleration * accelFactor * deltaTime;

@@ -83,7 +83,7 @@ export class GeneticAlgorithm {
     let fitness = 0;
 
     // Distance traveled
-    fitness += car.distanceTraveled * 0.05;
+    fitness += car.distanceTraveled * 2;
 
     // Bonus for checkpoints
     fitness += car.checkpointsPassed * 800;

@@ -7,6 +7,8 @@ interface ControlPanelProps {
   setIsTraining: (training: boolean) => void;
   populationSize: number;
   setPopulationSize: (size: number) => void;
+  timeLimit: number;
+  setTimeLimit: (limit: number) => void;
   onReset?: () => void;
   onSaveBest?: () => void;
   onLoadBest?: () => void;
@@ -17,6 +19,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   setIsTraining,
   populationSize,
   setPopulationSize,
+  timeLimit,
+  setTimeLimit,
   onReset,
   onSaveBest,
   onLoadBest
@@ -25,6 +29,13 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     const value = parseInt(e.target.value);
     if (value >= 10 && value <= 200) {
       setPopulationSize(value);
+    }
+  };
+
+  const handleTimeLimitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+    if (value >= 10000 && value <= 60000) {
+      setTimeLimit(value);
     }
   };
 
@@ -59,6 +70,21 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
             step="10"
             value={populationSize}
             onChange={handlePopulationChange}
+            disabled={isTraining}
+            className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+          />
+
+          {/* Time Limit */}
+          <label className="block text-sm font-medium mb-2">
+            Time Limit (ms): {timeLimit}
+          </label>
+          <input
+            type="range"
+            min="10000"
+            max="60000"
+            step="5000"
+            value={timeLimit}
+            onChange={handleTimeLimitChange}
             disabled={isTraining}
             className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
           />

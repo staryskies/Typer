@@ -15,12 +15,12 @@ export class GameEngine {
   private generationTime: number;
   private maxGenerationTime: number;
 
-  constructor(track: Track, populationSize: number = 50) {
+  constructor(track: Track, populationSize: number = 50, maxGenerationTime: number = 10000) {
     this.track = track;
     this.geneticAlgorithm = new GeneticAlgorithm();
     this.lastUpdateTime = Date.now();
     this.generationTime = 0;
-    this.maxGenerationTime = 50000; // 20 seconds per generation (faster)
+    this.maxGenerationTime = maxGenerationTime; // 20 seconds per generation (faster)
 
     this.gameState = {
       cars: this.geneticAlgorithm.createInitialPopulation(
@@ -44,7 +44,7 @@ export class GameEngine {
 
     const currentTime = Date.now();
     const deltaTime = Math.min((currentTime - this.lastUpdateTime) / 1000, 0.016); // Cap at 60fps
-    const simulationSpeed = 4.0; // 2x speed simulation
+    const simulationSpeed = 8.0; // 2x speed simulation
     const adjustedDeltaTime = deltaTime * simulationSpeed;
     this.lastUpdateTime = currentTime;
     this.generationTime += adjustedDeltaTime * 1000;
@@ -212,6 +212,10 @@ export class GameEngine {
         this.track.startAngle
       );
     }
+  }
+
+  setTimeLimit(size: number): void {
+    this.maxGenerationTime = size;
   }
 
   public setTrack(newTrack : Track): void {

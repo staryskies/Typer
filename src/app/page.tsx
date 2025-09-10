@@ -15,6 +15,7 @@ export default function Home() {
   const [generation, setGeneration] = useState(1)
   const [bestFitness, setBestFitness] = useState(0)
   const [populationSize, setPopulationSize] = useState(50)
+  const [maxGenerationTime, setMaxGenerationTime ] = useState(10000)
   const [selectedCar, setSelectedCar] = useState<Car | null>(null)
   const [bestCar, setBestCar] = useState<Car | null>(null)
   const [aliveCount, setAliveCount] = useState(0)
@@ -123,6 +124,8 @@ export default function Home() {
                 generation={generation}
                 setGeneration={setGeneration}
                 setBestFitness={setBestFitness}
+                maxGenerationTime = {maxGenerationTime}
+                setMaxGenerationTime = {setMaxGenerationTime}
                 populationSize={populationSize}
                 onCarSelect={handleCarSelect}
                 onStatsUpdate={handleStatsUpdate}

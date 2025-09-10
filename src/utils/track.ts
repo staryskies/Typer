@@ -168,14 +168,17 @@ export class TrackGenerator {
     const walls: Wall[] = [];
     const checkpoints: Checkpoint[] = [];
 
+    // ✅ Center of the canvas
     const centerX = width / 2;
     const centerY = height / 2;
-    const loopRadius = Math.min(width, height) * 0.15;
-    const trackWidth = 60;
 
-    // Create figure-8 path points
+    // ✅ Loop radius scales to fit the canvas
+    const loopRadius = Math.min(width, height) * 0.28; // 20% of smaller dimension
+    const trackWidth = Math.min(width, height) * 0.12; // 6% of smaller dimension
+
+    // Generate path points for the figure-eight
     const pathPoints: Vector2D[] = [];
-    const segments = 128;
+    const segments = 160;
 
     for (let i = 0; i < segments; i++) {
       const t = (i / segments) * Math.PI * 2;
@@ -188,11 +191,11 @@ export class TrackGenerator {
       pathPoints.push({ x, y });
     }
 
+    // Build walls
     for (let i = 0; i < pathPoints.length; i++) {
       const current = pathPoints[i];
       const next = pathPoints[(i + 1) % pathPoints.length];
 
-      // Calculate perpendicular direction
       const dx = next.x - current.x;
       const dy = next.y - current.y;
       const length = Math.sqrt(dx * dx + dy * dy);
@@ -201,13 +204,13 @@ export class TrackGenerator {
         const perpX = (-dy / length) * trackWidth / 2;
         const perpY = (dx / length) * trackWidth / 2;
 
-        // ✅ Skip walls near the center to create a pass-through
+        // Distance from center for crossover area
         const distanceFromCenter = Math.sqrt(
           (current.x - centerX) ** 2 + (current.y - centerY) ** 2
         );
 
-        // If close to center, leave open space
-        if (distanceFromCenter < loopRadius * 0.6) {
+        // Leave a gap only in the intersection center
+        if (distanceFromCenter < loopRadius * 0.2) {
           continue;
         }
 
@@ -225,8 +228,7 @@ export class TrackGenerator {
       }
     }
 
-
-    // Create checkpoints
+    // Create checkpoints evenly spaced
     const checkpointCount = 24;
     for (let i = 0; i < checkpointCount; i++) {
       const pointIndex = Math.floor((i / checkpointCount) * pathPoints.length);
@@ -241,20 +243,31 @@ export class TrackGenerator {
         const perpX = (-dy / length) * trackWidth / 2;
         const perpY = (dx / length) * trackWidth / 2;
 
-        checkpoints.push({
-          start: { x: point.x - perpX, y: point.y - perpY },
-          end: { x: point.x + perpX, y: point.y + perpY },
-          id: i
-        });
+        // Don't place checkpoints inside the crossing area
+        const distanceFromCenter = Math.sqrt(
+          (point.x - centerX) ** 2 + (point.y - centerY) ** 2
+        );
+
+        if (distanceFromCenter > loopRadius * 0.3) {
+          checkpoints.push({
+            start: { x: point.x - perpX, y: point.y - perpY },
+            end: { x: point.x + perpX, y: point.y + perpY },
+            id: i
+          });
+        }
       }
     }
 
+    // ✅ Start position aligned to canvas
     return {
       walls,
       generationTime: 0,
       checkpoints,
-      startPosition: pathPoints[0],
-      startAngle: 180
+      startPosition: {
+        x: centerX - loopRadius * 1.5, // far left of the left loop
+        y: centerY
+      },
+      startAngle: -90 // facing right
     };
   }
 

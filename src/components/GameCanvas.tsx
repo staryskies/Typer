@@ -11,6 +11,8 @@ interface GameCanvasProps {
   generation: number;
   setGeneration: (gen: number) => void;
   setBestFitness: (fitness: number) => void;
+  maxGenerationTime: number;
+  setMaxGenerationTime: (maxGenerationTime: number) => void;
   populationSize: number;
   setTrack: (track: Track) => void;
   onCarSelect?: (car: Car) => void;
@@ -25,6 +27,8 @@ const GameCanvas = React.forwardRef<any, GameCanvasProps>(({
   populationSize,
   onCarSelect,
   onStatsUpdate,
+  maxGenerationTime,
+  setMaxGenerationTime,
   track,
   setTrack
 }, ref) => {
@@ -220,10 +224,10 @@ const GameCanvas = React.forwardRef<any, GameCanvasProps>(({
     
     ctx.fillStyle = '#ffffff';
     ctx.font = '14px Arial';
-    ctx.fillText(`Generation: ${gameState.generation}`, 20, 30);
-    ctx.fillText(`Best Fitness: ${Math.round(gameState.bestFitness)}`, 20, 50);
-    ctx.fillText(`Cars Alive: ${gameState.cars.filter(c => c.alive).length}`, 20, 70);
-    ctx.fillText(`Time: ${Math.round(gameState.timeElapsed / 1000)}s`, 20, 90);
+    ctx.fillText(`Generation: ${gameState.generation}`, 70, 30);
+    ctx.fillText(`Best Fitness: ${Math.round(gameState.bestFitness)}`, 70, 50);
+    ctx.fillText(`Cars Alive: ${gameState.cars.filter(c => c.alive).length}`, 70, 70);
+    ctx.fillText(`Time: ${Math.round(gameState.timeElapsed / 1000)}s`, 70, 90);
   };
 
   const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
@@ -272,7 +276,7 @@ const GameCanvas = React.forwardRef<any, GameCanvasProps>(({
     const canvas = canvasRef.current;
 
     if (TrackChoice === "FigureEight") {
-      newTrack = TrackGenerator.createFigureEightTrack(canvas.width * 1.3, canvas.height * 1.2);
+      newTrack = TrackGenerator.createFigureEightTrack(canvas.width, canvas.height);
     } else {
       newTrack = TrackGenerator.createSimpleOvalTrack(canvas.width, canvas.height);
     }
