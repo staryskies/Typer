@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import React from 'react';
+import React from "react";
 
 interface ControlPanelProps {
   isTraining: boolean;
@@ -23,7 +23,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   setMaxGenerationTime,
   onReset,
   onSaveBest,
-  onLoadBest
+  onLoadBest,
 }) => {
   const handlePopulationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
@@ -34,7 +34,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
 
   const handleTimeLimitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
-    if (value >= 10000 && value <= 60000) {
+    if (value >= 10000 && value <= 260000) {
       setMaxGenerationTime(value);
     }
   };
@@ -42,7 +42,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   return (
     <div className="bg-gray-800 rounded-lg p-4">
       <h3 className="text-lg font-semibold mb-4">Training Controls</h3>
-      
+
       <div className="space-y-4">
         {/* Start/Stop Training */}
         <div>
@@ -50,11 +50,11 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
             onClick={() => setIsTraining(!isTraining)}
             className={`w-full py-2 px-4 rounded font-semibold transition-colors ${
               isTraining
-                ? 'bg-red-600 hover:bg-red-700 text-white'
-                : 'bg-green-600 hover:bg-green-700 text-white'
+                ? "bg-red-600 hover:bg-red-700 text-white"
+                : "bg-green-600 hover:bg-green-700 text-white"
             }`}
           >
-            {isTraining ? 'Stop Training' : 'Start Training'}
+            {isTraining ? "Stop Training" : "Start Training"}
           </button>
         </div>
 
@@ -81,7 +81,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
           <input
             type="range"
             min="10000"
-            max="60000"
+            max="260000"
             step="5000"
             value={maxGenerationTime}
             onChange={handleTimeLimitChange}
@@ -124,8 +124,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         {/* Training Parameters */}
         <div className="border-t border-gray-600 pt-4">
           <h4 className="text-sm font-semibold mb-2">Racing Circuit Info</h4>
-          <div className="text-xs text-gray-300 space-y-1">
-          </div>
+          <div className="text-xs text-gray-300 space-y-1"></div>
         </div>
       </div>
 

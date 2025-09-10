@@ -23,9 +23,9 @@ export class GeneticAlgorithm {
   ): Car[] {
     const population: Car[] = [];
     const sensorCount = 5;
-    const inputNodes = sensorCount + 4; // sensors + speed + angle_sin + angle_cos
+    const inputNodes = sensorCount + 4; // sensors + speed + angle_sin + angle_cos + braking
     const hiddenNodes = 8;
-    const outputNodes = 3;; // steering + acceleration + braking
+    const outputNodes = 3; // steering + acceleration + braking
 
     for (let i = 0; i < populationSize; i++) {
       const car: Car = {
@@ -38,7 +38,7 @@ export class GeneticAlgorithm {
         acceleration: 0,
         braking: 0,
         friction: 0.92, 
-        turnSpeed: 6, 
+        turnSpeed: 0.08,
         sensors: this.createSensors(sensorCount),
         fitness: 0,
         alive: true,
@@ -203,7 +203,7 @@ export class GeneticAlgorithm {
       braking: 0,
       acceleration: 0,
       friction: 0.95,
-      turnSpeed: 0.03,
+      turnSpeed: 0.08,
       sensors: this.createSensors(5),
       fitness: 0,
       alive: true,
