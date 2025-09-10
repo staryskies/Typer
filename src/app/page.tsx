@@ -80,8 +80,11 @@ export default function Home() {
         reader.onload = (e) => {
           try {
             const networkData = JSON.parse(e.target?.result as string)
-            // Here you would load the network into a car
-            console.log('Network loaded:', networkData)
+            // Load the network into the GameCanvas
+            if (gameCanvasRef.current && 'loadBestNetwork' in gameCanvasRef.current) {
+              (gameCanvasRef.current as any).loadBestNetwork(networkData)
+              console.log('Network loaded successfully')
+            }
           } catch (error) {
             console.error('Error loading network:', error)
           }

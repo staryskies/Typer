@@ -225,15 +225,9 @@ export class GameEngine {
 
   }
 
-  public setTrack(newTrack : Track): void {
-
-
-    // Recreate the cars on the new track
-    this.gameState.cars = this.geneticAlgorithm.createInitialPopulation(
-      this.gameState.cars.length,
-      newTrack.startPosition,
-      newTrack.startAngle
-    );
+  public setTrack(newTrack: Track): void {
+    this.track = newTrack; // Actually update the track reference
+    // Don't move cars - they stay in their current positions
   }
 
 }

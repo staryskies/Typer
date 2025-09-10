@@ -37,12 +37,22 @@ const GameCanvas = React.forwardRef<any, GameCanvasProps>(({
   const animationFrameRef = useRef<number>();
   const [selectedCar, setSelectedCar] = useState<Car | null>(null);
 
-  // Expose resetSimulation method to parent component
+  // Expose methods to parent component
   useImperativeHandle(ref, () => ({
     resetSimulation: () => {
       if (gameEngineRef.current) {
         gameEngineRef.current.reset();
         setSelectedCar(null);
+      }
+    },
+    loadBestNetwork: (networkData: any) => {
+      if (gameEngineRef.current) {
+        const gameState = gameEngineRef.current.getGameState();
+        if (gameState.cars.length > 0) {
+          // Replace the first car's brain with the loaded network
+          gameState.cars[0].brain = networkData;
+          console.log('Network loaded into car 0');
+        }
       }
     }
   }));
@@ -303,7 +313,10 @@ const GameCanvas = React.forwardRef<any, GameCanvasProps>(({
     setTrack(newTrack);
 
     // Recreate the GameEngine so it's fully clean
-    gameEngineRef.current = new GameEngine(newTrack, populationSize , maxGenerationTime);
+    if (gameEngineRef.current) {
+      gameEngineRef.current.setTrack(newTrack);
+      setTrack(newTrack); // Update parent state to re-render with new track
+    }
     console.log(maxGenerationTime);
     
     // Clear selected car since all old cars are gone
