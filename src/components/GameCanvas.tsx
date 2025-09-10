@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { GameEngine } from '@/utils/gameEngine';
 import { TrackGenerator } from '@/utils/track';
 import { Car, Track } from '@/types/game';
@@ -36,6 +36,16 @@ const GameCanvas = React.forwardRef<any, GameCanvasProps>(({
   const gameEngineRef = useRef<GameEngine | null>(null);
   const animationFrameRef = useRef<number>();
   const [selectedCar, setSelectedCar] = useState<Car | null>(null);
+
+  // Expose resetSimulation method to parent component
+  useImperativeHandle(ref, () => ({
+    resetSimulation: () => {
+      if (gameEngineRef.current) {
+        gameEngineRef.current.reset();
+        setSelectedCar(null);
+      }
+    }
+  }));
   // Initialize game engine
 
 
@@ -57,10 +67,18 @@ const GameCanvas = React.forwardRef<any, GameCanvasProps>(({
     const initialTrack = TrackGenerator.createSimpleOvalTrack(canvas.width, canvas.height);
 
     setTrack(initialTrack); // update parent state
-    gameEngineRef.current = new GameEngine(initialTrack, populationSize); // use same track
+    gameEngineRef.current = new GameEngine(initialTrack, populationSize , maxGenerationTime); // use same track
+    console.log(maxGenerationTime);
   }, [populationSize]);
 
-  
+  // Update max generation time when it changes
+  useEffect(() => {
+    if (gameEngineRef.current) {
+      gameEngineRef.current.setMaxGenerationTime(maxGenerationTime);
+    }
+  }, [maxGenerationTime]);
+
+
 
   // Game loop with performance optimization
   const gameLoop = useCallback(() => {
@@ -285,7 +303,8 @@ const GameCanvas = React.forwardRef<any, GameCanvasProps>(({
     setTrack(newTrack);
 
     // Recreate the GameEngine so it's fully clean
-    gameEngineRef.current = new GameEngine(newTrack, populationSize);
+    gameEngineRef.current = new GameEngine(newTrack, populationSize , maxGenerationTime);
+    console.log(maxGenerationTime);
     
     // Clear selected car since all old cars are gone
     setSelectedCar(null);
@@ -293,6 +312,8 @@ const GameCanvas = React.forwardRef<any, GameCanvasProps>(({
     // Render immediately to reflect the new track
     render();
   };
+
+
 
 
 

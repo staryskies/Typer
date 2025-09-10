@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import GameCanvas from '@/components/GameCanvas'
 import NeuralNetworkVisualizer from '@/components/NeuralNetworkVisualizer'
 import ControlPanel from '@/components/ControlPanel'
@@ -35,13 +35,25 @@ export default function Home() {
     }
   }
 
+  const gameCanvasRef = useRef<{ resetSimulation: () => void } | null>(null)
+
   const handleReset = () => {
+    // Stop training first
+    setIsTraining(false)
+
+    // Reset local state
     setSelectedCar(null)
+    setBestCar(null)
     setGeneration(1)
     setBestFitness(0)
     setAliveCount(0)
     setAverageFitness(0)
     setTimeElapsed(0)
+
+    // Reset the game engine through the canvas component
+    if (gameCanvasRef.current) {
+      gameCanvasRef.current.resetSimulation()
+    }
   }
 
   const handleSaveBest = () => {
@@ -118,6 +130,7 @@ export default function Home() {
           <div className="lg:col-span-3">
             <div className="card rounded p-4">
               <GameCanvas
+                ref={gameCanvasRef}
                 track={track}
                 setTrack={setTrack}
                 isTraining={isTraining}
@@ -161,7 +174,7 @@ export default function Home() {
                     aliveCount={aliveCount}
                     averageFitness={averageFitness}
                     timeElapsed={timeElapsed}
-                    maxTime={20000}
+                    maxTime={maxGenerationTime}
                   />
                 </div>
               )}
@@ -176,6 +189,10 @@ export default function Home() {
                 populationSize={populationSize}
                 setPopulationSize={setPopulationSize}
                 onReset={handleReset}
+                onSaveBest={handleSaveBest}
+                onLoadBest={handleLoadBest}
+                maxGenerationTime={maxGenerationTime}
+                setMaxGenerationTime={setMaxGenerationTime}
               />
 
         

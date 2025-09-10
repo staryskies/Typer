@@ -7,8 +7,8 @@ interface ControlPanelProps {
   setIsTraining: (training: boolean) => void;
   populationSize: number;
   setPopulationSize: (size: number) => void;
-  timeLimit: number;
-  setTimeLimit: (limit: number) => void;
+  maxGenerationTime: number;
+  setMaxGenerationTime: (limit: number) => void;
   onReset?: () => void;
   onSaveBest?: () => void;
   onLoadBest?: () => void;
@@ -19,8 +19,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   setIsTraining,
   populationSize,
   setPopulationSize,
-  timeLimit,
-  setTimeLimit,
+  maxGenerationTime,
+  setMaxGenerationTime,
   onReset,
   onSaveBest,
   onLoadBest
@@ -35,7 +35,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   const handleTimeLimitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
     if (value >= 10000 && value <= 60000) {
-      setTimeLimit(value);
+      setMaxGenerationTime(value);
     }
   };
 
@@ -76,21 +76,21 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
 
           {/* Time Limit */}
           <label className="block text-sm font-medium mb-2">
-            Time Limit (ms): {timeLimit}
+            Time Limit (ms): {maxGenerationTime}
           </label>
           <input
             type="range"
             min="10000"
             max="60000"
             step="5000"
-            value={timeLimit}
+            value={maxGenerationTime}
             onChange={handleTimeLimitChange}
             disabled={isTraining}
             className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
           />
           <div className="flex justify-between text-xs text-gray-400 mt-1">
-            <span>10</span>
-            <span>200</span>
+            <span>10000</span>
+            <span>60000</span>
           </div>
         </div>
 

@@ -15,7 +15,7 @@ export class GameEngine {
   private generationTime: number;
   private maxGenerationTime: number;
 
-  constructor(track: Track, populationSize: number = 50, maxGenerationTime: number = 10000) {
+  constructor(track: Track, populationSize: number = 50, maxGenerationTime: number = 15000) {
     this.track = track;
     this.geneticAlgorithm = new GeneticAlgorithm();
     this.lastUpdateTime = Date.now();
@@ -49,6 +49,7 @@ export class GameEngine {
     this.lastUpdateTime = currentTime;
     this.generationTime += adjustedDeltaTime * 1000;
     this.gameState.generationTime = this.generationTime;
+    this.gameState.maxTime = this.maxGenerationTime;
 
 
     // Update each car
@@ -156,8 +157,10 @@ export class GameEngine {
     // Reset generation state
     this.gameState.generation++;
     this.generationTime = 0;
-    
+    this.gameState.generationTime = 0;
+    this.maxGenerationTime = this.gameState.maxTime;
     this.gameState.timeElapsed = 0;
+    this.lastUpdateTime = Date.now(); // Reset the timer for new generation
   }
 
   start(): void {
@@ -179,7 +182,9 @@ export class GameEngine {
     this.gameState.bestFitness = 0;
     this.gameState.timeElapsed = 0;
     this.generationTime = 0;
+    this.gameState.generationTime = 0;
     this.gameState.isRunning = false;
+    this.lastUpdateTime = Date.now(); // Reset the timer
   }
 
   getGameState(): GameState {
@@ -214,8 +219,10 @@ export class GameEngine {
     }
   }
 
-  setTimeLimit(size: number): void {
-    this.maxGenerationTime = size;
+  setMaxGenerationTime(limit: number): void {
+    this.maxGenerationTime = limit;
+    this.gameState.maxTime = limit;
+
   }
 
   public setTrack(newTrack : Track): void {
